@@ -60,7 +60,7 @@ app.get('/messages', async (req, res) => {
 app.post('/status', async (req, res) => {
     const username = req.headers.user;
     try {
-        await
+        
     } catch (error) {
         
     }
