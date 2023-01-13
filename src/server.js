@@ -35,15 +35,35 @@ app.get('/participants', async (req, res) => {
 });
 
 app.post('/messages', async (req, res) => {
-    
+    const { to, text, type } = req.body;
+    const from = req.headers.user;
+
+    try {
+        await db.collection('messages').insertOne({ from, to, text, type });
+        res.sendStatus(200);
+    } catch (error) {
+        res.sendStatus(500);
+    }
 });
 
 app.get('/messages', async (req, res) => {
-    
+    try {
+        const messages = await db.collection('messages').find().toArray();
+        res.send(messages);
+        console.log(messages);
+    } catch (error) {
+        res.sendStatus(500);
+    }
+   
 });
 
 app.post('/status', async (req, res) => {
-    
+    const username = req.headers.user;
+    try {
+        await
+    } catch (error) {
+        
+    }
 });
 
 
