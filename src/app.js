@@ -24,7 +24,7 @@ app.post('/participants', async (req, res) => {
         const isLogged = await db.collection('participants').findOne({ name });
 
         if (isLogged) return res.sendStatus(409);
-        if (!name) return res.sendStatus(422);
+        if (!name || name === Number(name)) return res.sendStatus(422);
         await db.collection('participants').insertOne({ name });
         res.sendStatus(201);
     }
