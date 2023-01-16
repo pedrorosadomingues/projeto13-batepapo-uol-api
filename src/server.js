@@ -38,6 +38,13 @@ app.get('/participants', async (req, res) => {
 
         console.log(participants);
 
+        setInterval( () => { participants.forEach( async (p) => { 
+            if (Date.now() - p.lastStatus > 10000 || p.lastStatus === undefined) { 
+               await db.collection('participants').deleteOne({ name: p.name }),
+               await db.collection('messages').insertOne({ from: p.name, to: 'Todos', text: 'sai da sala...', type: 'status', time: dayjs().format('HH:MM:SS') })   
+            } 
+            }) }, 15000);
+
         res.send(participants);
 
     } catch (error) {
