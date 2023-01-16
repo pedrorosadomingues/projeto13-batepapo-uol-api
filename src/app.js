@@ -8,17 +8,14 @@ import dayjs from 'dayjs';
 dotenv.config();
 
 const mongoClient = new MongoClient(process.env.MONGO_URI);
-
 let db;
-
 mongoClient.connect(() => {
     db = mongoClient.db("batePapoUol");
 });
 
+
 const app = express();
-
 app.use(cors());
-
 app.use(express.json());
 
 app.post('/participants', async (req, res) => {
@@ -41,15 +38,23 @@ app.get('/participants', async (req, res) => {
 
         console.log(participants);
 
-        setInterval( () => { participants.forEach( async (p) => { 
-            if (Date.now() - p.lastStatus > 10000 || p.lastStatus === undefined) { 
-               await db.collection('participants').deleteOne({ name: p.name }),
-               await db.collection('messages').insertOne({ from: p.name, to: 'Todos', text: 'sai da sala...', type: 'status', time: dayjs().format('HH:MM:SS') })   
-            } 
-            }) }, 15000);
+        if (participants.length > 0) {
+            setInterval(() => {
+                participants.forEach(async (p) => {
+                    if (Date.now() - p.lastStatus > 10000 || p.lastStatus === undefined) {
+                        try {
+                            await db.collection('messages').insertOne({ from: p.name, to: 'Todos', text: 'sai da sala...', type: 'message', time: dayjs().format('HH:MM:SS') }),
+                                await db.collection('participants').deleteOne({ name: p.name })
+                               
+                        } catch (error) {
+                            res.sendStatus(500);
+                        }
 
+                    }
+                })
+            }, 15000);
+        }
         res.send(participants);
-
     } catch (error) {
 
         res.sendStatus(500);
@@ -132,6 +137,7 @@ app.post('/status', async (req, res) => {
         res.sendStatus(500);
     }
 });
+
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is litening on port ${process.env.PORT}.`);
