@@ -53,7 +53,7 @@ app.get('/participants', async (req, res) => {
                         try {
                             await db.collection('messages').insertOne({ from: p.name, to: 'Todos', text: 'sai da sala...', type: 'message', time: dayjs().format('HH:MM:SS') }),
                                 await db.collection('participants').deleteOne({ name: p.name })
-                               
+
                         } catch (error) {
                             res.sendStatus(500);
                         }
@@ -83,11 +83,11 @@ app.post('/messages', async (req, res) => {
 
     const validation = messageSchema.validate({ to, text, type }, { abortEarly: false });
 
-    const time = dayjs().format('HH:MM:SS');
-    if(!from){
+    const time = dayjs().format('HH:MM:ss');
+    if (!from) {
         return res.sendStatus(422);
     }
-  
+
     if (validation.error) {
         const errorMessages = validation.error.details.map((error) => error.message);
         return res.status(422).send(errorMessages)
@@ -120,6 +120,8 @@ app.get('/messages', async (req, res) => {
 
         const allMessages = privateMessages.concat(publicMessages);
 
+        if (!limit || limit <= 0 || limit !== Number(limit)) return res.sendStatus(422);
+
         if (limit) {
             const messagesLimit = allMessages.reverse().slice(0, Number(limit));
             res.send(messagesLimit);
@@ -141,7 +143,7 @@ app.post('/status', async (req, res) => {
     try {
         const isLogged = await db.collection('participants').findOne({ name: username });
         if (!isLogged) {
-            return res.sendStatus(404);
+            return res.sendStatus(201);
         }
 
         const data = await db.collection('participants').updateOne({ name: username }, { $set: { lastStatus: Date.now() } });
