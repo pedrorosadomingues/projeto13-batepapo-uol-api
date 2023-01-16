@@ -8,14 +8,17 @@ import dayjs from 'dayjs';
 dotenv.config();
 
 const mongoClient = new MongoClient(process.env.MONGO_URI);
+
 let db;
+
 mongoClient.connect(() => {
     db = mongoClient.db("batePapoUol");
 });
 
-
 const app = express();
+
 app.use(cors());
+
 app.use(express.json());
 
 app.post('/participants', async (req, res) => {
@@ -129,7 +132,6 @@ app.post('/status', async (req, res) => {
         res.sendStatus(500);
     }
 });
-
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is litening on port ${process.env.PORT}.`);
