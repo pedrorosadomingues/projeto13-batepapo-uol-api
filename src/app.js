@@ -7,10 +7,10 @@ import dayjs from 'dayjs';
 
 dotenv.config();
 
-const mongoClient = new MongoClient(process.env.MONGO_URI);
+const mongoClient = new MongoClient(process.env.DATABASE_URL);
 let db;
 mongoClient.connect(() => {
-    db = mongoClient.db("batePapoUol");
+    db = mongoClient.db();
 });
 
 
