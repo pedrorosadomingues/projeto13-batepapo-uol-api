@@ -55,7 +55,7 @@ app.get('/participants', async (req, res) => {
                     if (Date.now() - p.lastStatus > 10000 || p.lastStatus === undefined) {
 
                         try {
-                            await db.collection('messages').insertOne({ from: p.name, to: 'Todos', text: 'sai da sala...', type: 'message', time: dayjs().format('HH:MM:ss') }),
+                            await db.collection('messages').insertOne({ from: p.name, to: 'Todos', text: 'sai da sala...', type: 'status', time: dayjs().format('HH:MM:ss') }),
                                 await db.collection('participants').deleteOne({ name: p.name })
 
                         } catch (error) {
@@ -144,15 +144,17 @@ app.post('/status', async (req, res) => {
     console.log(Date.now());
     const username = req.headers.user;
 
+    
+
     try {
         const isLogged = await db.collection('participants').findOne({ name: username });
         if (!isLogged) {
-            return res.sendStatus(201);
+            return res.sendStatus(404);
         }
 
         const data = await db.collection('participants').updateOne({ name: username }, { $set: { lastStatus: Date.now() } });
 
-        res.sendStatus(200);
+        res.sendStatus(201);
 
     } catch (error) {
         res.sendStatus(500);
