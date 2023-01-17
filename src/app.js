@@ -38,7 +38,7 @@ app.post('/participants', async (req, res) => {
     }
 });
 
-app.get('/participants', async (req, res) => {
+app.get('/participants', async (req, res) => { 
 
     try {
 
@@ -55,7 +55,7 @@ app.get('/participants', async (req, res) => {
                     if (Date.now() - p.lastStatus > 10000 || p.lastStatus === undefined) {
 
                         try {
-                            await db.collection('messages').insertOne({ from: p.name, to: 'Todos', text: 'sai da sala...', type: 'message', time: dayjs().format('HH:MM:SS') }),
+                            await db.collection('messages').insertOne({ from: p.name, to: 'Todos', text: 'sai da sala...', type: 'message', time: dayjs().format('HH:MM:ss') }),
                                 await db.collection('participants').deleteOne({ name: p.name })
 
                         } catch (error) {
@@ -123,14 +123,12 @@ app.get('/messages', async (req, res) => {
 
         const publicMessages = messages.filter((message) => message.type === 'message' || message.type === 'status');
 
-        const allMessages = privateMessages.concat(publicMessages);
-
-        
+        const allMessages = privateMessages.concat(publicMessages);  
 
         if (limit) {
             if (!limit || limit <= 0 || limit !== Number(limit)) return res.sendStatus(422);
             const messagesLimit = allMessages.reverse().slice(0, Number(limit));
-            res.send(messagesLimit);
+           return res.send(messagesLimit);
         }
         res.send(allMessages.reverse());
 
